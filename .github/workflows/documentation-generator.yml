@@ -1,0 +1,51 @@
+name: Generate terraform docs
+on:
+  - pull_request
+jobs:
+  check_if_readme_is_actual:
+    runs-on: ubuntu-latest
+    outputs:
+      num_changed: ${{ steps.generate_docs.outputs.num_changed }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - id: generate_docs
+        name: Render terraform docs inside the README.md return number of changed files
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: "false"
+      # Use the REST API to commit changes, so we get automatic commit signing
+  commit_and_push:
+    needs: check_if_readme_is_actual
+    if: needs.check_if_readme_is_actual.outputs.num_changed != 0
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Render terraform docs inside the README.md
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: "false"
+      - name: Commit changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_TO_COMMIT: README.md
+          DESTINATION_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          export MESSAGE="chore(documentation): update $FILE_TO_COMMIT"
+          export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
+          export CONTENT=$( base64 -i $FILE_TO_COMMIT )
+          gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+          --field message="$MESSAGE" \
+          --field content="$CONTENT" \
+          --field encoding="base64" \
+          --field branch="$DESTINATION_BRANCH" \
+          --field sha="$SHA"
