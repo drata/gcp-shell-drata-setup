@@ -15,29 +15,3 @@ The following steps demonstrate how to connect GCP in Drata when using this scri
 5. After the process finishes, from your editor, download the `drata-key-file.json` file.
 6. Go to the GCP connection drawer and select Upload File to upload the `drata-json-key-file.json` file.
 7. Select the `Save & Test Connection` button.
-
-<!-- BEGIN_TF_DOCS -->
-## Requirements
-
-No requirements.
-
-## Providers
-
-No providers.
-
-## Modules
-
-No modules.
-
-## Resources
-
-No resources.
-
-## Inputs
-
-No inputs.
-
-## Outputs
-
-No outputs.
-<!-- END_TF_DOCS -->
