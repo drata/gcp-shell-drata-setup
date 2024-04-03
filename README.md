@@ -13,5 +13,5 @@ The following steps demonstrate how to connect GCP in Drata when using this scri
    1. `chmod -x drata.sh` to give it execution permissions.
    2. `drata.sh` to run the script.
 5. After the process finishes, from your editor, download the `drata-key-file.json` file.
-6.  Go to the GCP connection drawer for user access review and select Upload File to upload the `drata-json-key-file.json` file.
-7.  Select the `Save & Test Connection` button.
+6. Go to the GCP connection drawer and select Upload File to upload the `drata-json-key-file.json` file.
+7. Select the `Save & Test Connection` button.
