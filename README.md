@@ -15,3 +15,37 @@ The following steps demonstrate how to connect GCP in Drata when using this scri
 5. After the process finishes, from your editor, download the `drata-key-file.json` file.
 6.  Go to the GCP connection drawer for user access review and select Upload File to upload the `drata-json-key-file.json` file.
 7.  Select the `Save & Test Connection` button.
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [null_resource.nope](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_nope"></a> [nope](#output\_nope) | TODO: Remove this and add your own outputs |
+| <a name="output_true"></a> [true](#output\_true) | n/a |
+<!-- END_TF_DOCS -->
