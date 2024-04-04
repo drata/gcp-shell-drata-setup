@@ -7,9 +7,10 @@ set -e
 prefix="[ Drata ]"
 
 # Resource names
-serviceAccountId="dratareadonly"
-projectRole="DrataReadOnlyProjectRole"
-organizationRole="DrataReadOnlyOrganizationalRole"
+drata_role_name="DrataReadOnly"
+serviceAccountId="${drata_role_name,,}"
+projectRole="${drata_role_name}ProjectRole"
+organizationRole="${drata_role_name}OrganizationalRole"
 
 # check google cloud shell
 if ! command -v gcloud &>/dev/null; then
