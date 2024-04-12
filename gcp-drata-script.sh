@@ -43,7 +43,11 @@ then
     exit;
 fi
 
-printf "\n${prefix} Enabling services...🛜 \n"
+# Ask the user whether the service account will connect multiple projects
+printf "\n${prefix} Will the service account connect multiple projects❓ [y/n] "
+read multipleProjects;
+
+printf "\n\n${prefix} Enabling services...🛜 \n"
 gcloud services enable compute.googleapis.com cloudresourcemanager.googleapis.com admin.googleapis.com \
 sqladmin.googleapis.com monitoring.googleapis.com --no-user-output-enabled 
 printf "${prefix} Necessary services enabled 🚀 \n\n"
@@ -164,9 +168,24 @@ gcloud projects add-iam-policy-binding $projectId --member="serviceAccount:${ser
 # Assing organization custom role
 printf "\n${prefix} Assigning organization custom role to service account...\n";
 gcloud organizations add-iam-policy-binding $organizationId --member="serviceAccount:${serviceAccountEmail}" --role="organizations/${organizationId}/roles/${organizationRole}" --no-user-output-enabled
-# Assing viewer/role
-printf "\n${prefix} Assigning viewer/role to service account...\n";
+# Assing viewer/role to project
+printf "\n${prefix} Assigning viewer/role to service account within the project...\n";
 gcloud projects add-iam-policy-binding $projectId --member="serviceAccount:${serviceAccountEmail}" --role="roles/viewer" --no-user-output-enabled
+if [ "$multipleProjects" != "n" -a "$multipleProjects" != "N" ]
+then
+  # Assing viewer/role to organization
+  printf "\n${prefix} Assigning viewer/role to service account within the organization...\n";
+  gcloud organizations add-iam-policy-binding $organizationId --member="serviceAccount:${serviceAccountEmail}" --role="roles/viewer" --no-user-output-enabled
+else
+  # if the user typed "No is multi project" then check if the viewer role is at the organization level and remove it
+  removePolicy=$(
+    gcloud organizations get-iam-policy $organizationId --format='value(bindings.members)' --flatten=bindings --filter="bindings.role:roles/viewer AND bindings.members:serviceAccount:${serviceAccountEmail}"
+  );
+  if [ -n "$removePolicy" ]
+  then
+    gcloud organizations remove-iam-policy-binding $organizationId --member="serviceAccount:${serviceAccountEmail}" --role="roles/viewer" --no-user-output-enabled;
+  fi
+fi
 
 # ===========================
 printf "\n${prefix} Done! Service Account '${serviceAccountId}' has been granted ✅\n"
