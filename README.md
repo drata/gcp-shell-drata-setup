@@ -13,7 +13,7 @@ The following steps demonstrate how to connect GCP in Drata when using this scri
 5. Click the `Open terminal` button at the top of the editor to navigate back to your terminal, run the following commands.
    1. `chmod +x drata.sh` to give it execution permissions.
    2. `./drata.sh` to run the script.
-6. A prompt will show up and you must type `n` if the service account will target to a single project otherwise will access the entire organization.
+6. The prompt `Will the service account connect multiple projects? [y/n]` will appear. Respond with `n` if it is desired that the service account should only be added to a single project in your organization.
 7. After the process finishes, navigate back to your editor and download the `drata-key-file.json` file.
 8. In the Drata app, go to the GCP connection drawer and select Upload File to upload the `drata-key-file.json` file.
 9. Select the `Save & Test Connection` button.
