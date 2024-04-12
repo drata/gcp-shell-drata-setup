@@ -136,7 +136,9 @@ printf "${prefix} '${organizationRole}' organization role has been created 🚀\
 gcloud iam roles update $organizationRole --organization=$organizationId --permissions="\
 resourcemanager.organizations.getIamPolicy,\
 storage.buckets.get,\
-storage.buckets.getIamPolicy" --no-user-output-enabled
+storage.buckets.getIamPolicy,\
+resourcemanager.folders.get,\
+resourcemanager.organizations.get" --no-user-output-enabled
 
 # ===========================
 # Service Account
