@@ -181,8 +181,9 @@ then
 else
   # if the user typed "No is multi project" then check if the viewer role is at the organization level and remove it
   removePolicy=$(
-    gcloud organizations get-iam-policy $organizationId --format='value(bindings.members)' --flatten=bindings --filter="bindings.role:roles/viewer AND bindings.members:serviceAccount:${serviceAccountEmail}"
+    gcloud organizations get-iam-policy $organizationId --format='value(bindings.members)' --flatten=bindings --filter="bindings.role:roles/viewer AND bindings.members ~ serviceAccount:${serviceAccountEmail}$"
   );
+  # if the service account has the viewer role then delete the policy
   if [ -n "$removePolicy" ]
   then
     gcloud organizations remove-iam-policy-binding $organizationId --member="serviceAccount:${serviceAccountEmail}" --role="roles/viewer" --no-user-output-enabled;
