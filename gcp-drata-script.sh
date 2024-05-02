@@ -7,7 +7,7 @@ set -e
 prefix="[ Drata ]"
 
 # Resource names
-drata_role_name="ENG45104SHELL"
+drata_role_name="DrataReadOnly"
 serviceAccountId="${drata_role_name,,}"
 projectRole="${drata_role_name}ProjectRole"
 organizationRole="${drata_role_name}OrganizationalRole"
