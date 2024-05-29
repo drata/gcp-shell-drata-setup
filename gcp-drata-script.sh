@@ -48,8 +48,14 @@ printf "\n${prefix} Will the service account connect multiple projects❓ [y/n] 
 read multipleProjects;
 
 printf "\n\n${prefix} Enabling services...🛜 \n"
-gcloud services enable compute.googleapis.com cloudresourcemanager.googleapis.com admin.googleapis.com \
-sqladmin.googleapis.com monitoring.googleapis.com --no-user-output-enabled 
+gcloud services enable \ 
+compute.googleapis.com \
+cloudresourcemanager.googleapis.com \
+admin.googleapis.com \
+sqladmin.googleapis.com \
+monitoring.googleapis.com \
+cloudasset.googleapis.com \
+--no-user-output-enabled 
 printf "${prefix} Necessary services enabled 🚀 \n\n"
 
 serviceAccountEmail="${serviceAccountId}@${projectId}.iam.gserviceaccount.com";
@@ -138,7 +144,8 @@ resourcemanager.organizations.getIamPolicy,\
 storage.buckets.get,\
 storage.buckets.getIamPolicy,\
 resourcemanager.folders.get,\
-resourcemanager.organizations.get" --no-user-output-enabled
+resourcemanager.organizations.get,\
+cloudasset.assets.searchAllResources" --no-user-output-enabled
 
 # ===========================
 # Service Account
