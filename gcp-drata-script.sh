@@ -48,10 +48,11 @@ isPolicyEnforced=$(
   gcloud resource-manager org-policies list --project=$projectId --filter="constraint:constraints/iam.disableServiceAccountKeyCreation"  --format="value(booleanPolicy.enforced)";
 );
 if [ "$isPolicyEnforced" == "True" ]; then
+    printf "${prefix} Enabling keys creation policy...🔄  \n"
     # disable key creation policy turned off
     gcloud resource-manager org-policies disable-enforce iam.disableServiceAccountKeyCreation --project=$projectId --no-user-output-enabled 
-    printf "${prefix} The keys creation was disabled, please run this script again...🔄  \n\n"
-    exit;
+    sleep 30s;
+    printf "${prefix} Key Creation Enabled...✅ \n\n"
 fi
 
 # Ask the user whether the service account will connect multiple projects
