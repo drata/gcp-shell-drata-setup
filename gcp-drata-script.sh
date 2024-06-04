@@ -43,19 +43,23 @@ then
     exit;
 fi
 
+# check policy
+isPolicyEnforced=$(
+  gcloud resource-manager org-policies list --project=$projectId --filter="constraint:constraints/iam.disableServiceAccountKeyCreation"  --format="value(booleanPolicy.enforced)";
+);
+if [ "$isPolicyEnforced" == "True" ]; then
+    # disable key creation policy turned off
+    gcloud resource-manager org-policies disable-enforce iam.disableServiceAccountKeyCreation --project=$projectId --no-user-output-enabled 
+    printf "${prefix} The keys creation was disabled, please run this script again...🔄  \n\n"
+    exit;
+fi
+
 # Ask the user whether the service account will connect multiple projects
 printf "\n${prefix} Will the service account connect multiple projects❓ [y/n] "
 read multipleProjects;
 
 printf "\n\n${prefix} Enabling services...🛜 \n"
-gcloud services enable \ 
-compute.googleapis.com \
-cloudresourcemanager.googleapis.com \
-admin.googleapis.com \
-sqladmin.googleapis.com \
-monitoring.googleapis.com \
-cloudasset.googleapis.com \
---no-user-output-enabled 
+gcloud services enable compute.googleapis.com cloudresourcemanager.googleapis.com admin.googleapis.com sqladmin.googleapis.com monitoring.googleapis.com cloudasset.googleapis.com --no-user-output-enabled 
 printf "${prefix} Necessary services enabled 🚀 \n\n"
 
 serviceAccountEmail="${serviceAccountId}@${projectId}.iam.gserviceaccount.com";
