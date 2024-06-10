@@ -17,3 +17,16 @@ The following steps demonstrate how to connect GCP in Drata when using this scri
 7. After the process finishes, navigate back to your editor and download the `drata-key-file.json` file.
 8. In the Drata app, go to the GCP connection drawer and select Upload File to upload the `drata-key-file.json` file.
 9. Select the `Save & Test Connection` button.
+
+## Troubleshooting ⚠️
+
+1. Fixing `FAILED_PRECONDITION: Key creation is not allowed on this service account (type: constraints/iam.disableServiceAccountKeyCreation)` issue.
+   * Go to the [IAM Organization Policies](https://console.cloud.google.com/iam-admin/orgpolicies) page.
+   * Make sure the project where the service account will be stored is selected (top left in the console).
+   * Type `Disable service account key creation` on the `🔽 Filter` bar and select the policy.
+   * Click over `📝 MANAGE POLICY` button.
+   * Go to `Policy source` and select the `Override parent's policy` option.
+   * Scroll down a little and open up the `Enforced` rule.
+   * Make sure the `Enforcement` section is `Off`.
+   * Click `SET POLICY` to save changes.
+   * Run this script again.
