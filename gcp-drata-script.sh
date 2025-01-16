@@ -8,7 +8,7 @@ prefix="[ Drata ]"
 
 # Resource names
 drata_role_name="DrataReadOnly"
-serviceAccountId="${drata_role_name,,}"
+serviceAccountId=$(echo "$drata_role_name" | tr '[:upper:]' '[:lower:]')
 projectRole="${drata_role_name}ProjectRole"
 organizationRole="${drata_role_name}OrganizationalRole"
 
