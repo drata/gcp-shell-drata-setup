@@ -151,15 +151,40 @@ serviceAccountInfo=$(
 if [ -z "$serviceAccountInfo" ]
 then
   gcloud iam service-accounts create ${serviceAccountId} --project="$projectId" --display-name="${serviceAccountId}" --description="Service Account with read-only access for Drata Autopilot" --no-user-output-enabled;
+  # Delay between the commands to allow propagation and avoid a NOT_FOUND error below
+  sleep 30;
 else
   gcloud iam service-accounts update ${serviceAccountEmail} --project="$projectId" --display-name="${serviceAccountId}" --description="Service Account with read-only access for Drata Autopilot" --no-user-output-enabled;
 fi
 printf "${prefix} '${serviceAccountId}' service account has been created 🚀\n";
+# Force refresh the IAM Cache
+gcloud projects get-iam-policy $projectId > /dev/null;
 # Create json key file
 printf "\n${prefix} Generating json key file...\n";
-(gcloud iam service-accounts keys create ./drata-key-file.json --iam-account=${serviceAccountEmail} --project="$projectId" --no-user-output-enabled &&
-printf "${prefix} Key file has been generated 🚀\n\n";)\
-|| printf "${prefix} Expected error, Please delete a key from the service account and run this script again. A max of 10 keys is supported per service account ❌\n\n"
+
+tempFile=$(mktemp)
+gcloud iam service-accounts keys create ./drata-key-file.json \
+    --iam-account="${serviceAccountEmail}" \
+    --project="$projectId" \
+    --no-user-output-enabled >"$tempFile" 2>&1 || exitCode=$?
+
+exitCode=${exitCode:-0}
+errorMessage=$(<"$tempFile")
+rm -f "$tempFile"
+if [ $exitCode -ne 0 ]; then
+    if echo "$errorMessage" | grep -qE "MAX_KEYS_EXCEEDED|FAILED_PRECONDITION"; then
+        printf "${prefix} Error: Too many keys. Please delete a key from the service account and try again. ❌\n\n";
+    elif echo "$errorMessage" | grep -q "PERMISSION_DENIED"; then
+        printf "${prefix} Error: You don't have the necessary permissions to create a key for this service account. ❌\n\n";
+    elif echo "$errorMessage" | grep -q "NOT_FOUND"; then
+        printf "${prefix} Warning: The specified service account does not exist. This may be due to cache issues, run this script again please. 🔄\n\n"
+    else
+        printf "${prefix} An unexpected error occurred. Details: $errorMessage ❌\n\n"
+    fi
+    exit $exitCode
+else
+    printf "${prefix} Key file has been generated 🚀\n\n"
+fi
 
 # ===========================
 # Assignments
