@@ -47,6 +47,10 @@ fi
 printf "\n${prefix} Will the service account connect multiple projects❓ [y/n] "
 read multipleProjects;
 
+# Ask the user whether Drata will sync IAM users from every project in the organization
+printf "\n${prefix} Will Drata sync IAM users from all projects in the organization for access reviews❓ [y/n] "
+read syncAllProjectsUsers;
+
 printf "\n\n${prefix} Enabling services...🛜 \n"
 gcloud services enable compute.googleapis.com cloudresourcemanager.googleapis.com admin.googleapis.com sqladmin.googleapis.com monitoring.googleapis.com cloudasset.googleapis.com --no-user-output-enabled
 printf "${prefix} Necessary services enabled 🚀 \n\n"
@@ -132,13 +136,19 @@ fi
 printf "${prefix} '${organizationRole}' organization role has been created 🚀\n";
 
 # Update permissions and stage
-gcloud iam roles update $organizationRole --organization=$organizationId --permissions="\
+organizationRolePermissions="\
 resourcemanager.organizations.getIamPolicy,\
 storage.buckets.get,\
 storage.buckets.getIamPolicy,\
 resourcemanager.folders.get,\
 resourcemanager.organizations.get,\
-cloudasset.assets.searchAllResources" --no-user-output-enabled
+cloudasset.assets.searchAllResources"
+# Reading every project's IAM policy lets Drata sync IAM users from all projects
+if [ "$syncAllProjectsUsers" == "y" -o "$syncAllProjectsUsers" == "Y" ]
+then
+  organizationRolePermissions="${organizationRolePermissions},resourcemanager.projects.get,resourcemanager.projects.list,resourcemanager.projects.getIamPolicy"
+fi
+gcloud iam roles update $organizationRole --organization=$organizationId --permissions="${organizationRolePermissions}" --no-user-output-enabled
 
 # ===========================
 # Service Account
@@ -220,4 +230,9 @@ fi
 
 # ===========================
 printf "\n${prefix} Done! Service Account '${serviceAccountId}' has been granted ✅\n"
+if [ "$syncAllProjectsUsers" == "y" -o "$syncAllProjectsUsers" == "Y" ]
+then
+  printf "${prefix} The service account can read the IAM policy of every project in the organization.\n"
+  printf "${prefix} After you upload the key file, turn on 'Sync IAM users from all projects in the organization' on the GCP connection in Drata.\n"
+fi
 # ===========================
